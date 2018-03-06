@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use \App\User;
 
 
 
@@ -19,7 +18,6 @@ class UserController extends ApiController
    private $signupRules = [
       'username'=>'required|between:6,32|unique:users',
       'password'=>'required|min:6',
-      'email'=>'required|email|unique:users',
    ];
 
 
@@ -48,10 +46,11 @@ class UserController extends ApiController
          	return err('请先登出');
 
 
-        $user = $this->loginValidate()
+        $user = $this->loginValidate();
 
       	if(! $user)
       		return err('invalid username or password');
+
 
       	session(['user'=>$user]);
 
@@ -77,7 +76,7 @@ class UserController extends ApiController
 
    			$user = $this->model->where('username',$username)->first();
 
-   			if($user && Hash::check($password,$user['password'])
+   			if($user && Hash::check($password,$user['password']))
    				return $user;
 
    		}
@@ -99,8 +98,10 @@ class UserController extends ApiController
    	{
 
       	if( !$data = $this->signupValidate())
-         	return $this->getError();
+         	return $this->resultReturn(false);
+
       	$r = $this->model->create($data);
+
       	return $r ? suc($r->id) : err('error');
 
    	}
@@ -116,13 +117,19 @@ class UserController extends ApiController
     */
    private function signupValidate()
    {
+
       // get need data
       $data =request()->toArray();
+
       $data = $this->validator($this->signupRules,$data);
+
       if(!$data)
          return false;
+
       $data['password'] = Hash::make($data['password']);
+
       return $data;
+
    }
 
 
@@ -135,14 +142,17 @@ class UserController extends ApiController
     * @DateTime 2018-01-23T15:09:35+0800
     * @return   boolean                  [description]
     */
-   public function is_login()
-   {
-      if($a = session('user')){
-         $want = request('want');
-         return $want ? suc($a->_all($want)) : suc();
-      }
-      return err(null,200);
-   }
+   	public function is_login()
+   	{
+
+      	if($a = session('user'))
+      	{
+         	$want = request('want');
+         	return $want ? suc($a->_all($want)) : suc();
+      	}
+
+      	return err(null,200);
+   	}
 
 
 
@@ -152,12 +162,12 @@ class UserController extends ApiController
     * @DateTime 2018-01-23T15:10:33+0800
     * @return   Array                   On success return true&&user data. fail return false&&errorMsg.
     */
-   public function getUserData(){
-      $user =session('user');
-      if(!$user )
-         return err('not user');
-      return suc($user->toArray());
-   }
+   	public function getUserData(){
+      	$user =session('user');
+      	if(!$user )
+         	return err('not user');
+      	return suc($user->toArray());
+  	}
 
 
 
@@ -168,11 +178,11 @@ class UserController extends ApiController
     * @DateTime 2018-01-27T15:17:21+0800
     * @return   array                   data = true|false
     */
-   public function usernameExists()
-   {
-      $key = 'username';
-      return $this->find_key_exists($key);
-   }
+   	public function usernameExists()
+   	{
+      	$key = 'username';
+      	return $this->find_key_exists($key);
+   	}
 
 
 
@@ -200,13 +210,12 @@ class UserController extends ApiController
      * @DateTime 2018-02-07T14:58:38+0800
      * @return   [type]                 [description]
      */
-   public function getUserInfo()
-   {
-      $id = request('id');
-      $r = $this->model->where('id',$id)->first();
-      return $this->resultReturn($r);
-   }
-
+   	public function getUserInfo()
+   	{
+      	$id = request('id');
+      	$r = $this->model->where('id',$id)->first();
+      	return $this->resultReturn($r);
+   	}
 
 
 

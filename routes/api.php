@@ -30,3 +30,11 @@ Route::group(['prefix' => "cat"],function(){
 
 	Route::any('remove',"CatController@remove");
 });
+
+Route::group(['prefix'=>'user'],function(){
+
+	Route::any('signup',"UserController@signup");
+
+	Route::any('login', "UserController@login");
+
+});

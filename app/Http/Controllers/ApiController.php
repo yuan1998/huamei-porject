@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Storage;
+use Validator;
 
 class ApiController extends Controller
 {
@@ -114,5 +116,33 @@ class ApiController extends Controller
 
     	return false;
 
+    }
+
+
+
+    /**
+     * The Method is create data Validator .
+     * @Author   Yuan1998
+     * @DateTime 2018-03-06T17:29:55+0800
+     * @param    Array                   $rules  Validator rules.
+     * @param    Array                   $data    Validate data.
+     * @return   Array|Boolean                          result.
+     */
+    public function validator($rules,$data = null)
+    {
+        // get data
+        if(!$data){
+            $data = $this->filterData(request()->toArray());
+        }
+
+        $v = Validator::make($data,$rules);
+
+        if($v->fails())
+        {
+            $this->errorMsgs = $v->errors();
+            return false;
+        }
+
+        return $data;
     }
 }
